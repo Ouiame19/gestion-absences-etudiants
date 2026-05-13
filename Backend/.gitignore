@@ -33,8 +33,8 @@ build/
 # VS Code
 .vscode/
 
-# Secrets - NE JAMAIS PUSH
-application.properties
+
+
 .env
 *.env
 *.log

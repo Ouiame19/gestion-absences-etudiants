@@ -1,0 +1,246 @@
+### =============================
+### ROLES
+### =============================
+
+### Créer un rôle Admin
+POST http://localhost:8081/api/roles
+Content-Type: application/json
+
+{
+  "nom": "ADMIN"
+}
+
+###  Créer un rôle Etudiant
+POST http://localhost:8081/api/roles
+Content-Type: application/json
+
+{
+  "nom": "ETUDIANT"
+}
+
+### Créer un rôle Enseignant
+POST http://localhost:8081/api/roles
+Content-Type: application/json
+
+{
+  "nom": "ENSEIGNANT"
+}
+
+### Obtenir tous les rôles
+GET http://localhost:8081/api/roles
+
+### =============================
+### UTILISATEURS
+### =============================
+
+### Créer un utilisateur Admin
+POST http://localhost:8081/api/utilisateurs
+Content-Type: application/json
+
+{
+  "nomUtilisateur": "admin",
+  "motDePasse": "admin123",
+  "email": "admin@fss.ma",
+  "role": { "id": 1 }
+}
+
+### Créer un utilisateur Etudiant
+POST http://localhost:8081/api/utilisateurs
+Content-Type: application/json
+
+{
+  "nomUtilisateur": "ouiame",
+  "motDePasse": "pass123",
+  "email": "ouiame@fss.ma",
+  "role": { "id": 2 }
+}
+
+### Créer un utilisateur Enseignant
+POST http://localhost:8081/api/utilisateurs
+Content-Type: application/json
+
+{
+  "nomUtilisateur": "prof.hassan",
+  "motDePasse": "prof123",
+  "email": "hassan@fss.ma",
+  "role": { "id": 3 }
+}
+
+### Obtenir tous les utilisateurs
+GET http://localhost:8081/api/utilisateurs
+
+### Obtenir un utilisateur par id
+GET http://localhost:8081/api/utilisateurs/1
+
+### =============================
+### ETUDIANTS
+### =============================
+
+### Créer un étudiant 1
+POST http://localhost:8081/api/etudiants
+Content-Type: application/json
+
+{
+  "nom": "El Idrissi",
+  "prenom": "Ouiame",
+  "email": "ouiame@fss.ma",
+  "cne": "R123456",
+  "filiere": "ISI",
+  "utilisateur": { "id": 2 }
+}
+
+### Créer un étudiant 2
+POST http://localhost:8081/api/etudiants
+Content-Type: application/json
+
+{
+  "nom": "Benali",
+  "prenom": "Youssef",
+  "email": "youssef@fss.ma",
+  "cne": "R789012",
+  "filiere": "ISI",
+  "utilisateur": { "id": 2 }
+}
+
+### Obtenir tous les étudiants
+GET http://localhost:8081/api/etudiants
+
+### Obtenir un étudiant par id
+GET http://localhost:8081/api/etudiants/1
+
+### Modifier un étudiant
+PUT http://localhost:8081/api/etudiants/1
+Content-Type: application/json
+
+{
+  "nom": "El Idrissi",
+  "prenom": "Ouiame",
+  "email": "ouiame.updated@fss.ma",
+  "cne": "R123456",
+  "filiere": "ISI"
+}
+
+### Supprimer un étudiant
+DELETE http://localhost:8081/api/etudiants/2
+
+### =============================
+### ENSEIGNANTS
+### =============================
+
+### Créer un enseignant
+POST http://localhost:8081/api/enseignants
+Content-Type: application/json
+
+{
+  "nom": "Alaoui",
+  "prenom": "Hassan",
+  "email": "hassan@fss.ma",
+  "specialite": "Informatique",
+  "utilisateur": { "id": 3 }
+}
+
+### Obtenir tous les enseignants
+GET http://localhost:8081/api/enseignants
+
+### Obtenir un enseignant par id
+GET http://localhost:8081/api/enseignants/1
+
+### =============================
+### MATIERES
+### =============================
+
+### Créer une matière 1
+POST http://localhost:8081/api/matieres
+Content-Type: application/json
+
+{
+  "nom": "Développement Web",
+  "code": "DW301",
+  "enseignant": { "id": 1 }
+}
+
+### Créer une matière 2
+POST http://localhost:8081/api/matieres
+Content-Type: application/json
+
+{
+  "nom": "Base de Données",
+  "code": "BD201",
+  "enseignant": { "id": 1 }
+}
+
+### Obtenir toutes les matières
+GET http://localhost:8081/api/matieres
+
+### Obtenir une matière par id
+GET http://localhost:8081/api/matieres/1
+
+### =============================
+### ABSENCES
+### =============================
+
+### Créer une absence 1
+POST http://localhost:8081/api/absences
+Content-Type: application/json
+
+{
+  "etudiant": { "id": 1 },
+  "matiere": { "id": 1 },
+  "dateAbsence": "2025-01-13",
+  "justifiee": false,
+  "motif": "Maladie"
+}
+
+### Créer une absence 2
+POST http://localhost:8081/api/absences
+Content-Type: application/json
+
+{
+  "etudiant": { "id": 1 },
+  "matiere": { "id": 2 },
+  "dateAbsence": "2025-01-14",
+  "justifiee": true,
+  "motif": "Certificat médical"
+}
+
+### Créer une absence 3
+POST http://localhost:8081/api/absences
+Content-Type: application/json
+
+{
+  "etudiant": { "id": 2 },
+  "matiere": { "id": 1 },
+  "dateAbsence": "2025-01-15",
+  "justifiee": false,
+  "motif": ""
+}
+
+### Obtenir toutes les absences
+GET http://localhost:8081/api/absences
+
+### Obtenir une absence par id
+GET http://localhost:8081/api/absences/1
+
+### Obtenir les absences d'un étudiant
+GET http://localhost:8081/api/absences/etudiant/1
+
+### Obtenir les absences justifiées
+GET http://localhost:8081/api/absences/justifiees?justifiee=true
+
+### Obtenir les absences non justifiées
+GET http://localhost:8081/api/absences/justifiees?justifiee=false
+
+### Modifier une absence
+PUT http://localhost:8081/api/absences/1
+Content-Type: application/json
+
+{
+  "etudiant": { "id": 1 },
+  "matiere": { "id": 1 },
+  "dateAbsence": "2025-01-13",
+  "justifiee": true,
+  "motif": "Certificat médical fourni"
+}
+
+### Supprimer une absence
+DELETE http://localhost:8081/api/absences/3

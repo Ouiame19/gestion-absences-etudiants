@@ -1,104 +1,92 @@
-import { useEffect, useState } from 'react';
-import { getAbsences, deleteAbsence } from '../services/absenceService';
+import { useState, useEffect } from 'react';
+import { addAbsence } from '../services/absenceService';
+import { getEtudiants } from '../api/etudiantService';
+import { getMatieres } from '../api/matiereService';
 
-function AbsenceList() {
-  const [absences, setAbsences] = useState([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [erreur, setErreur] = useState(null);
+function AbsenceForm() {
+  const [date, setDate]           = useState('');
+  const [justifiee, setJustifiee] = useState(false);
+  const [motif, setMotif]         = useState('');
+  const [etudiantId, setEtudiantId] = useState('');
+  const [matiereId, setMatiereId]   = useState('');
+  const [etudiants, setEtudiants]   = useState([]);
+  const [matieres, setMatieres]     = useState([]);
 
   useEffect(() => {
-    chargerAbsences();
+    getEtudiants().then((r) => setEtudiants(r.data.content));
+    getMatieres().then((r) => setMatieres(r.data.content));
   }, []);
 
-  const chargerAbsences = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-      const response = await getAbsences();
-      setAbsences(response.data.content); // ✅ Page Spring → .content
+      await addAbsence({
+        dateAbsence: date,
+        justifiee,
+        motif,
+        etudiant: { id: etudiantId },
+        matiere:  { id: matiereId },
+      });
+      alert('Absence ajoutée avec succès');
+      setDate(''); setJustifiee(false);
+      setMotif(''); setEtudiantId(''); setMatiereId('');
     } catch (error) {
       console.error(error);
-      setErreur('Erreur lors du chargement des absences.');
-    } finally {
-      setLoading(false);
+      alert('Erreur lors de l\'ajout.');
     }
   };
-
-  const supprimer = async (id) => {
-    if (window.confirm('Supprimer cette absence ?')) {
-      try {
-        await deleteAbsence(id);
-        chargerAbsences();
-      } catch (error) {
-        alert('Erreur lors de la suppression.');
-      }
-    }
-  };
-
-  // ✅ filtrage sur dateAbsence (nom correct du champ backend)
-  const filteredAbsences = absences.filter((a) =>
-    a.dateAbsence?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  if (loading) return <p className="text-center mt-4">Chargement...</p>;
-  if (erreur)  return <p className="text-center mt-4 text-danger">{erreur}</p>;
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">Liste des absences</h2>
+      <h2>Ajouter une absence</h2>
+      <form onSubmit={handleSubmit}>
 
-      {/* Barre de recherche */}
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Rechercher par date..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      {filteredAbsences.length === 0 ? (
-        <p className="text-muted">Aucune absence trouvée.</p>
-      ) : (
-        <table className="table table-bordered table-hover">
-          <thead className="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Étudiant</th>
-              <th>Matière</th>
-              <th>Date</th>
-              <th>Justifiée</th>
-              <th>Motif</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAbsences.map((absence) => (
-              <tr key={absence.id}>
-                <td>{absence.id}</td>
-                <td>{absence.etudiant?.nom} {absence.etudiant?.prenom}</td>
-                <td>{absence.matiere?.nom}</td>
-                <td>{absence.dateAbsence}</td>  {/* ✅ dateAbsence et non date */}
-                <td>
-                  <span className={`badge ${absence.justifiee ? 'bg-success' : 'bg-danger'}`}>
-                    {absence.justifiee ? 'Oui' : 'Non'}
-                  </span>
-                </td>
-                <td>{absence.motif || '—'}</td>
-                <td>
-                  <button
-                    className="btn btn-danger btn-sm"
-                    onClick={() => supprimer(absence.id)}
-                  >
-                    Supprimer
-                  </button>
-                </td>
-              </tr>
+        <div className="mb-3">
+          <label>Étudiant</label>
+          <select className="form-select" value={etudiantId}
+            onChange={(e) => setEtudiantId(e.target.value)} required>
+            <option value="">-- Choisir --</option>
+            {etudiants.map((et) => (
+              <option key={et.id} value={et.id}>
+                {et.nom} {et.prenom}
+              </option>
             ))}
-          </tbody>
-        </table>
-      )}
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label>Matière</label>
+          <select className="form-select" value={matiereId}
+            onChange={(e) => setMatiereId(e.target.value)} required>
+            <option value="">-- Choisir --</option>
+            {matieres.map((m) => (
+              <option key={m.id} value={m.id}>{m.nom}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-3">
+          <label>Date</label>
+          <input type="date" className="form-control"
+            value={date} onChange={(e) => setDate(e.target.value)} required />
+        </div>
+
+        <div className="mb-3">
+          <label>Motif (optionnel)</label>
+          <input type="text" className="form-control"
+            value={motif} onChange={(e) => setMotif(e.target.value)} />
+        </div>
+
+        <div className="form-check mb-3">
+          <input type="checkbox" className="form-check-input"
+            checked={justifiee} onChange={(e) => setJustifiee(e.target.checked)} />
+          <label className="form-check-label">Absence justifiée</label>
+        </div>
+
+        <button className="btn btn-primary" type="submit">Ajouter</button>
+      </form>
     </div>
   );
 }
 
-export default AbsenceList;
+export default AbsenceForm;
